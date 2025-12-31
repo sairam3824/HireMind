@@ -1,3 +1,4 @@
 pandas
 supabase
 python-dotenv
+pytz
