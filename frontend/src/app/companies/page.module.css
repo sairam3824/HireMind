@@ -1,0 +1,446 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.searchContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 9999px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.searchContainer:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.searchIcon {
+    color: var(--muted);
+    margin-right: 0.75rem;
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    width: 100%;
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: var(--muted);
+}
+
+.resultsArea {
+    margin-top: 3rem;
+    flex: 1;
+    width: 100%;
+}
+
+/* Company Group Styles */
+.companyGroup {
+    margin-bottom: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.companyHeader {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.companyName {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.jobCount {
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+.jobsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.jobCard {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+
+.jobCard:hover {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.jobTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 0.5rem 0;
+}
+
+.jobMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.loadingState {
+    text-align: center;
+    padding: 4rem;
+    color: var(--muted);
+}
+
+/* Modal Overlay */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content */
+.modalContent {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+    overflow: hidden;
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.closeButton:hover {
+    background: var(--card-border);
+    color: white;
+}
+
+/* Modal Body */
+.modalBody {
+    overflow-y: auto;
+    padding: 0;
+    flex: 1;
+}
+
+/* Reusing Header/Content structure from Job Details */
+.detailsHeader {
+    padding: 2rem 2rem 1.5rem 2rem;
+    border-bottom: 1px solid var(--card-border);
+    background: var(--card-bg);
+}
+
+.detailsHeader h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.detailsMeta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+}
+
+.dot {
+    color: var(--card-border);
+}
+
+.applyLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: background 0.2s;
+}
+
+.applyLink:hover {
+    background: var(--primary-hover);
+}
+
+.scrollArea {
+    padding: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .infoGrid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
+.infoBox {
+    background-color: rgba(39, 39, 42, 0.3);
+    padding: 1.25rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.infoBox:hover {
+    background-color: rgba(39, 39, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Companies modal has variable items, but we aim for consistent quality. 
+   If there are 6 items, this logic applies. If fewer, they will just fill naturally. */
+@media (min-width: 1025px) {
+
+    .infoBox:nth-last-child(1),
+    .infoBox:nth-last-child(2) {
+        grid-column: span 2;
+    }
+}
+
+.boxHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.infoLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a1a1aa;
+    font-weight: 600;
+    margin: 0;
+}
+
+.boxIcon {
+    color: #52525b;
+    transition: color 0.2s ease;
+}
+
+.infoBox:hover .boxIcon {
+    color: var(--primary);
+}
+
+.infoValue {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fafafa;
+    line-height: 1.3;
+    word-wrap: break-word;
+    display: block;
+}
+
+.descriptionText {
+    color: #e4e4e7;
+    line-height: 1.7;
+    font-size: 0.9rem;
+}
+
+.descriptionText p {
+    margin-bottom: 1rem;
+}
+
+.descriptionText ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.descriptionText li {
+    margin-bottom: 0.5rem;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modalOverlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .modalContent {
+        height: 85vh;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+.footer {
+    width: 100%;
+    border-top: 1px solid #27272a;
+    padding: 1.5rem 2rem;
+    background: #09090b;
+    margin-top: auto;
+}
+
+.footerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #71717a;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .footerContent {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+}
+
+.footerLinks {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footerLinks a {
+    color: #71717a;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footerLinks a:hover {
+    color: #e4e4e7;
+}
