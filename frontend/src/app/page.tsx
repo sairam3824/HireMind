@@ -3,8 +3,10 @@
 
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { FileText, ArrowRight, Loader2, CheckCircle, Upload, AlertCircle, Award } from "lucide-react";
+import { FileText, ArrowRight, Loader2, CheckCircle, Upload, AlertCircle, Award, Building, Briefcase, Construction } from "lucide-react";
+import Modal from "@/components/Modal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
     const [file, setFile] = useState<File | null>(null);
@@ -12,26 +14,51 @@ export default function Home() {
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [loadingStep, setLoadingStep] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const LOADING_STEPS = [
-        "Uploading...",
+        "Uploading Resume...",
         "Parsing PDF...",
-        "Analyzing Content...",
-        "Checking Keywords...",
-        "Predicting Score...",
-        "Finalizing..."
+        "Extracting Text...",
+        "Cleaning & Normalizing Data...",
+        "Identifying Sections...",
+        "Extracting Skills...",
+        "Detecting Experience & Projects...",
+        "Generating Resume Embeddings...",
+        "Matching Skills with Job Roles...",
+        "Analyzing ATS Keywords...",
+        "Checking Resume Strength...",
+        "Predicting Role Fit Score...",
+        "Finding Strong-Match Jobs...",
+        "Analyzing Career Trends...",
+        "Building Skill Gap Report...",
+        "Finalizing AI Insights..."
     ];
+
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (loading) {
             setLoadingStep(0);
             interval = setInterval(() => {
-                setLoadingStep((prev) => (prev + 1) % LOADING_STEPS.length);
-            }, 2000); // Change text every 2 seconds
+                setLoadingStep((prev) => {
+                    // Once we reach the end, cycle back to "Analyzing Content..." (index 2)
+                    // This prevents "Uploading..." (0) and "Parsing PDF..." (1) from showing again
+                    if (prev === LOADING_STEPS.length - 1) {
+                        return 2;
+                    }
+                    return prev + 1;
+                });
+            }, 2000);
         }
         return () => clearInterval(interval);
     }, [loading]);
+
+    const router = useRouter();
+
+    const handleMatchJobs = () => {
+        setIsModalOpen(true);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -87,24 +114,41 @@ export default function Home() {
         <div className={styles.container}>
             <main className={styles.main}>
                 <div className={styles.hero}>
-                    <div className={styles.iconWrapper}>
-                        <FileText size={64} className={styles.icon} />
+                    {/* Left Column: Browse Jobs */}
+                    <div className={styles.leftColumn}>
+                        <Link href="/jobs" className={styles.sideCard}>
+                            <Briefcase size={48} className={styles.cardIcon} />
+                            <h2>Browse Jobs</h2>
+                            <p>Discover thousands of job opportunities tailored to your skills and preferences.</p>
+                            <span className={styles.primaryButton}>
+                                Explore Jobs <ArrowRight size={18} />
+                            </span>
+                        </Link>
                     </div>
-                    <h1 className={styles.title}>Resume Parser</h1>
-                    <p className={styles.description}>
-                        Upload your resume to evaluate its ATS score and match with job opportunities.
-                    </p>
 
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    {/* Center Column: Resume Parser */}
+                    <div className={styles.centerColumn}>
+                        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                            <div style={{
+                                width: '80px', height: '80px', background: 'rgba(37, 99, 235, 0.1)',
+                                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                border: '1px solid rgba(37, 99, 235, 0.2)', margin: '0 auto 1.5rem auto'
+                            }}>
+                                <FileText size={40} color="var(--primary)" />
+                            </div>
+                            <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', fontWeight: 800, color: 'white', marginBottom: '1rem' }}>Resume Parser</h1>
+                            <p style={{ color: '#a1a1aa', maxWidth: '400px', margin: '0 auto', lineHeight: '1.6' }}>
+                                Upload your resume to evaluate its ATS score and match with job opportunities.
+                            </p>
+                        </div>
+
                         {!result ? (
                             <div style={{
-                                marginTop: '2rem',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '1.5rem',
                                 width: '100%',
-                                maxWidth: '500px'
                             }}>
                                 <input
                                     type="file"
@@ -115,23 +159,23 @@ export default function Home() {
                                 />
                                 <label
                                     htmlFor="resume-upload"
-                                    className={styles.comingSoon} /* Reusing existing style for base */
                                     style={{
                                         cursor: 'pointer',
-                                        padding: '2rem',
+                                        padding: '2.5rem 2rem',
                                         border: '2px dashed #3f3f46',
-                                        borderRadius: '12px',
+                                        borderRadius: '16px',
                                         width: '100%',
                                         textAlign: 'center',
-                                        background: 'transparent',
+                                        background: 'rgba(255, 255, 255, 0.02)',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
-                                        gap: '1rem'
+                                        gap: '1rem',
+                                        transition: 'all 0.2s ease'
                                     }}
                                 >
-                                    <Upload size={32} className="text-gray-400" />
-                                    <span style={{ fontSize: '1.1rem' }}>
+                                    <Upload size={40} className="text-gray-400" />
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 500, color: 'white' }}>
                                         {file ? file.name : "Click to Upload Resume (PDF)"}
                                     </span>
                                 </label>
@@ -155,7 +199,7 @@ export default function Home() {
 
                                 {loading && (
                                     <p style={{ fontSize: '0.9rem', color: '#e4e4e7', textAlign: 'center', marginTop: '0.5rem', opacity: 0.9 }}>
-                                        Results may take 1-2 minutes. (Beta Version)
+                                        Processing your resume… Results may take up to 2 minutes. (Beta Version)
                                     </p>
                                 )}
                                 {error && (
@@ -176,13 +220,9 @@ export default function Home() {
                             </div>
                         ) : (
                             <div style={{
-                                marginTop: '2rem',
                                 width: '100%',
-                                maxWidth: '800px',
                                 display: 'grid',
-                                gridTemplateColumns: 'minmax(300px, 1fr) 1fr',
                                 gap: '1.5rem',
-                                alignItems: 'start'
                             }}>
                                 {/* Score Card */}
                                 <div style={{
@@ -255,13 +295,13 @@ export default function Home() {
                                     )}
 
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-                                        <Link
-                                            href={`/jobs?q=${result.keywords ? encodeURIComponent(result.keywords.join(' ')) : ''}`}
+                                        <button
+                                            onClick={handleMatchJobs}
                                             className={styles.primaryButton}
-                                            style={{ flex: 1, justifyContent: 'center', fontSize: '0.9rem', padding: '0.8rem' }}
+                                            style={{ flex: 1, justifyContent: 'center', fontSize: '0.9rem', padding: '0.8rem', border: 'none', cursor: 'pointer' }}
                                         >
                                             Match with Jobs
-                                        </Link>
+                                        </button>
                                         <button
                                             onClick={() => { setFile(null); setResult(null); }}
                                             style={{
@@ -282,13 +322,17 @@ export default function Home() {
                         )}
                     </div>
 
-                    {!result && !file && (
-                        <div className={styles.actions}>
-                            <Link href="/jobs" className={styles.primaryButton}>
-                                Browse Jobs <ArrowRight size={18} />
-                            </Link>
-                        </div>
-                    )}
+                    {/* Right Column: Browse Companies */}
+                    <div className={styles.rightColumn}>
+                        <Link href="/companies" className={styles.sideCard}>
+                            <Building size={48} className={styles.cardIcon} />
+                            <h2>Top Compaines</h2>
+                            <p>Explore top leading companies and their active job listings in one place.</p>
+                            <span className={`${styles.primaryButton} ${styles.secondaryButton}`}>
+                                See Companies <ArrowRight size={18} />
+                            </span>
+                        </Link>
+                    </div>
                 </div>
             </main>
 
@@ -305,11 +349,60 @@ export default function Home() {
                     </div>
 
                     <div className={styles.footerLinks}>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms & Conditions</a>
+                        <Link href="/privacy-policy">Privacy Policy</Link>
+                        <Link href="/terms-conditions">Terms & Conditions</Link>
                     </div>
                 </div>
             </footer>
-        </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{
+                        width: '60px',
+                        height: '60px',
+                        background: 'rgba(234, 179, 8, 0.1)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1.5rem',
+                        color: '#eab308'
+                    }}>
+                        <Construction size={32} />
+                    </div>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white', marginBottom: '0.75rem' }}>
+                        Feature Coming Soon
+                    </h2>
+                    <p style={{ color: '#a1a1aa', fontSize: '1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                        The AI Job Matching feature is currently under construction. In the meantime, you can browse all available jobs manually.
+                    </p>
+                    <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+                        <button
+                            onClick={() => router.push('/jobs')}
+                            className={styles.primaryButton}
+                            style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}
+                        >
+                            Browse Jobs
+                        </button>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid #3f3f46',
+                                color: '#e4e4e7',
+                                padding: '0.75rem 1.5rem',
+                                borderRadius: '8px',
+                                fontWeight: 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                flex: 1
+                            }}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        </div >
     );
 }
