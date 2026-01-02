@@ -421,6 +421,15 @@
   }
 }
 
+.loadingMessage {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
+}
+
 /* Job Details (Right Column) */
 .jobDetails {
   display: none;
@@ -445,6 +454,23 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  width: fit-content;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  color: white;
+  transform: translateX(-4px);
 }
 
 .detailsHeader {
@@ -521,6 +547,26 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+.shareButton {
+  background-color: transparent;
+  color: #a1a1aa;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #3f3f46;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shareButton:hover {
+  background-color: #27272a;
+  color: white;
+  border-color: #52525b;
 }
 
 .saveButton:hover {
@@ -811,19 +857,6 @@
   }
 
   /* Hide job list when details are open if desired, but overlay is easier */
-
-  .backButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-  }
 }
 
 /* Footer */
@@ -868,4 +901,38 @@
 
 .footerLinks a:hover {
   color: white;
+}
+
+/* Toast Notification */
+.toast {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  transform: translateY(0);
+  background-color: #18181b;
+  border: 1px solid #3f3f46;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 1000;
+  white-space: nowrap;
+  animation: fadeIn 0.15s ease-out forwards;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

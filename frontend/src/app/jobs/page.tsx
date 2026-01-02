@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ReactMarkdown from 'react-markdown';
 import {
@@ -16,7 +17,9 @@ import {
     User,
     TrendingUp,
     Layers,
-    RefreshCw
+    RefreshCw,
+    Share2,
+    CheckCircle
 } from "lucide-react";
 import styles from "./page.module.css";
 import Calendar from "@/components/Calendar";
@@ -53,6 +56,7 @@ type Job = {
     job_level?: string;
     role?: string;
     job_function?: string;
+    company_logo?: string;
 };
 
 const SUGGESTED_ROLES = [
@@ -82,7 +86,7 @@ const JOB_TYPES = [
     "Contract",
     "Internship",
     "Apprentice",
-    "Part-time"
+    "Parttime"
 ];
 
 const JOB_LEVELS = [
@@ -101,6 +105,48 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [availableDates, setAvailableDates] = useState<Set<string>>(new Set());
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+    // URL Handling
+    useEffect(() => {
+        // Function to handle URL params
+        const handleUrlParams = () => {
+            const params = new URLSearchParams(window.location.search);
+            const jobId = params.get('jobId');
+            if (jobId && jobs.length > 0) {
+                const job = jobs.find(j => j.id === jobId);
+                if (job) {
+                    setSelectedJob(job);
+                }
+            }
+        };
+
+        handleUrlParams();
+    }, [jobs]);
+
+    const handleSelectJob = (job: Job | null) => {
+        setSelectedJob(job);
+        if (job) {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('jobId', job.id);
+            window.history.pushState({}, '', newUrl.toString());
+        } else {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('jobId');
+            window.history.pushState({}, '', newUrl.toString());
+        }
+    };
+
+    const handleShare = async () => {
+        if (!selectedJob) return;
+        const shareUrl = `${window.location.origin}/jobs?jobId=${selectedJob.id}`;
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+        } catch (err) {
+            console.error("Failed to copy link: ", err);
+        }
+    };
 
     // Search State
     const [searchQuery, setSearchQuery] = useState("");
@@ -127,6 +173,7 @@ export default function Home() {
     };
 
     const [error, setError] = useState(false);
+    const [showToast, setShowToast] = useState(false);
 
     // Fetch dates
     useEffect(() => {
@@ -209,7 +256,7 @@ export default function Home() {
 
             setJobs(allJobs);
             if (allJobs.length > 0) {
-                setSelectedJob(allJobs[0]);
+                setSelectedJob(null);
             } else {
                 setSelectedJob(null);
             }
@@ -495,14 +542,16 @@ export default function Home() {
                 <div className={styles.jobList}>
                     <div className={styles.listHeader}>
                         <h2>Jobs for you</h2>
-                        <span>{filteredJobs.length} results</span>
+                        <span>{filteredJobs.length} Jobs Fetched</span>
                     </div>
 
                     {loading ? (
-                        // Skeleton Loaders
-                        [1, 2, 3].map(i => (
-                            <div key={i} className={styles.skeletonCard} />
-                        ))
+                        <>
+                            <div className={styles.loadingMessage}>Hold on, data is fetching...</div>
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className={styles.skeletonCard} />
+                            ))}
+                        </>
                     ) : error ? (
                         <div className={styles.emptyState}>
                             <p>Something went wrong loading jobs.</p>
@@ -523,13 +572,33 @@ export default function Home() {
                             {filteredJobs.map((job) => (
                                 <div
                                     key={job.id}
-                                    onClick={() => setSelectedJob(job)}
+                                    onClick={() => handleSelectJob(job)}
                                     className={`${styles.card} ${selectedJob?.id === job.id ? styles.activeCard : ''}`}
                                 >
                                     <div className={styles.cardHeader}>
-                                        <h3 className={styles.jobTitle}>
-                                            {job.title}
-                                        </h3>
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                            {job.company_logo ? (
+                                                <img
+                                                    src={job.company_logo}
+                                                    alt={`${job.company} logo`}
+                                                    style={{
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        objectFit: 'contain',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        padding: '2px',
+                                                        flexShrink: 0
+                                                    }}
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : null}
+                                            <h3 className={styles.jobTitle}>
+                                                {job.title}
+                                            </h3>
+                                        </div>
                                         {selectedJob?.id === job.id && (
                                             <ChevronRight className={styles.activeIcon} size={20} />
                                         )}
@@ -560,11 +629,31 @@ export default function Home() {
                             {/* Job Header */}
                             <div className={styles.detailsHeader}>
                                 {/* Back Button for Mobile */}
-                                <div className={styles.backButton} onClick={() => setSelectedJob(null)}>
-                                    <ArrowLeft size={16} /> Back to jobs
+                                <div className={styles.backButton} onClick={() => handleSelectJob(null)}>
+                                    <ArrowLeft size={16} /> Back to all jobs
                                 </div>
 
-                                <h1>{selectedJob.title}</h1>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                    {selectedJob.company_logo && (
+                                        <img
+                                            src={selectedJob.company_logo}
+                                            alt={`${selectedJob.company} logo`}
+                                            style={{
+                                                width: '56px',
+                                                height: '56px',
+                                                objectFit: 'contain',
+                                                borderRadius: '8px',
+                                                backgroundColor: 'white',
+                                                padding: '4px',
+                                                flexShrink: 0
+                                            }}
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                            }}
+                                        />
+                                    )}
+                                    <h1 style={{ margin: 0, fontSize: '1.875rem', lineHeight: 1.2 }}>{selectedJob.title}</h1>
+                                </div>
                                 <div className={styles.detailsMeta}>
                                     <span className={styles.companyLink}>{selectedJob.company}</span>
                                     <span className={styles.dot}>•</span>
@@ -596,6 +685,21 @@ export default function Home() {
                                         {selectedJob.site ? `Apply on ${selectedJob.site}` : "Apply now"}
                                         <ExternalLink size={18} />
                                     </a>
+                                    <div style={{ position: 'relative' }}>
+                                        <button
+                                            onClick={handleShare}
+                                            className={styles.shareButton}
+                                            title="Share Job"
+                                        >
+                                            <Share2 size={18} />
+                                        </button>
+                                        {showToast && (
+                                            <div className={styles.toast}>
+                                                <CheckCircle size={18} color="#4ade80" />
+                                                Link Copied!
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -696,11 +800,12 @@ export default function Home() {
                     </div>
 
                     <div className={styles.footerLinks}>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms & Conditions</a>
+                        <Link href="/privacy-policy">Privacy Policy</Link>
+                        <Link href="/terms-conditions">Terms & Conditions</Link>
                     </div>
                 </div>
             </footer>
+
         </div>
     );
 }
