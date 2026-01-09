@@ -313,6 +313,11 @@ export default function Home() {
                     </div>
                 </div>
             </Modal>
+
+            <div
+                className={styles.hiddenTrigger}
+                onClick={() => router.push('/admin/feedback')}
+            />
         </div >
     );
 }
