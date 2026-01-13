@@ -2,10 +2,9 @@ import os
 import pandas as pd
 from jobspy import scrape_jobs
 from supabase import create_client
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 import json
-from datetime import datetime
 import pytz
 
 load_dotenv()
@@ -94,3 +93,15 @@ for i in range(0, len(records), 100):
     ).execute()
 
 print("Inserted", len(records), "jobs successfully.")
+
+# Delete data from 7 days ago (Example: if today is 13th, delete 6th)
+try:
+    # ensuring IST logic is used as requested
+    cleanup_date = datetime.now(IST).date() - timedelta(days=7)
+    cleanup_date_str = cleanup_date.isoformat()
+    print(f"Deleting data for date: {cleanup_date_str}")
+    
+    supabase.table("jobs").delete().eq("crawled_date", cleanup_date_str).execute()
+    print(f"Successfully deleted data for {cleanup_date_str}")
+except Exception as e:
+    print(f"Error while deleting old data: {e}")
