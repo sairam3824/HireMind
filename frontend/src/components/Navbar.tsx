@@ -54,6 +54,12 @@ export default function Navbar() {
                     >
                         Companies
                     </Link>
+                    <Link
+                        href="/admin"
+                        className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
+                    >
+                        Admin
+                    </Link>
                     <div className="ml-2 pl-2 border-l border-white/10 h-6 flex items-center">
                         <FeedbackWidget />
                     </div>
@@ -83,6 +89,13 @@ export default function Navbar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
                         Companies
+                    </Link>
+                    <Link
+                        href="/admin"
+                        className={`${styles.mobileNavLink} ${isActive("/admin") ? styles.active : ""}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        Admin
                     </Link>
                     <div className="pt-2 mt-2 border-t border-white/10">
                         <FeedbackWidget className={styles.mobileNavLink} />
