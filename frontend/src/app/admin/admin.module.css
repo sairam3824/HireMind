@@ -96,6 +96,7 @@
     color: #ffffff;
     font-size: 1rem;
     transition: all 0.2s;
+    text-align: right;
 }
 
 .input:focus {
@@ -136,6 +137,121 @@
 .button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.bombTimer {
+    font-size: 3rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: #ef4444;
+    text-align: center;
+    margin: 1rem 0;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    letter-spacing: 4px;
+}
+
+.redButton {
+    width: 100%;
+    background-color: #ef4444;
+    color: white;
+    font-weight: 700;
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.redButton:hover {
+    background-color: #dc2626;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+    transform: scale(1.02);
+}
+
+.explodedContainer {
+    text-align: center;
+    padding: 2rem;
+    color: #ef4444;
+}
+
+.explodedText {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.blastOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 50;
+    animation: blast 1s ease-out forwards;
+}
+
+@keyframes blast {
+    0% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+
+    10% {
+        background-color: #fff;
+        transform: scale(1.1);
+    }
+
+    20% {
+        background-color: #ff4500;
+        transform: scale(1.2);
+    }
+
+    40% {
+        background-color: #ff0000;
+        opacity: 0.8;
+    }
+
+    100% {
+        background-color: transparent;
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 
 /* Dashboard Header */
