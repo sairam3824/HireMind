@@ -22,24 +22,40 @@ export default function CompaniesPage() {
 
     const fetchCompanies = async () => {
         try {
-            const { data, error } = await supabase
-                .from('jobs')
-                .select('company')
+            const companyMap = new Map<string, Set<string>>()
+            let from = 0
+            const step = 1000
+            let fetching = true
 
-            if (error) throw error
+            while (fetching) {
+                const { data, error } = await supabase
+                    .from('jobs')
+                    .select('company, job_url')
+                    .range(from, from + step - 1)
 
-            // Process data to get unique companies and their job counts
-            const companyMap = new Map<string, number>()
+                if (error) throw error
 
-            data?.forEach((job: any) => {
-                if (job.company) {
-                    const count = companyMap.get(job.company) || 0
-                    companyMap.set(job.company, count + 1)
+                if (data && data.length > 0) {
+                    data.forEach((job: any) => {
+                        if (job.company && job.job_url) {
+                            if (!companyMap.has(job.company)) {
+                                companyMap.set(job.company, new Set())
+                            }
+                            companyMap.get(job.company)?.add(job.job_url)
+                        }
+                    })
+
+                    if (data.length < step) {
+                        fetching = false
+                    }
+                    from += step
+                } else {
+                    fetching = false
                 }
-            })
+            }
 
             const sortedCompanies = Array.from(companyMap.entries())
-                .map(([name, count]) => ({ name, jobCount: count }))
+                .map(([name, urlSet]) => ({ name, jobCount: urlSet.size }))
                 .sort((a, b) => a.name.localeCompare(b.name))
 
             setCompanies(sortedCompanies)
