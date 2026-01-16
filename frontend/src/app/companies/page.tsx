@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Search, MapPin, Calendar, Briefcase, X, ExternalLink, Globe, User, Clock, TrendingUp, Layers } from "lucide-react";
+import { Search, MapPin, Calendar, Briefcase, X, ExternalLink, Globe, User, Clock, TrendingUp, Layers, Bookmark } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import styles from "./page.module.css";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 type Job = {
     id: string;
@@ -52,6 +54,8 @@ type CompanyGroup = {
 };
 
 export default function CompaniesPage() {
+    const { user } = useAuth();
+    const router = useRouter();
     const [query, setQuery] = useState("");
     const [jobTitleQuery, setJobTitleQuery] = useState("");
     const [jobTypeQuery, setJobTypeQuery] = useState("");
@@ -61,6 +65,55 @@ export default function CompaniesPage() {
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
+    const [saving, setSaving] = useState(false);
+
+    // Fetch saved jobs
+    useEffect(() => {
+        const fetchSaved = async () => {
+            if (!user) {
+                setSavedJobIds(new Set());
+                return;
+            }
+            const { data } = await supabase.from('saved_jobs').select('job_id').eq('user_id', user.id);
+            if (data) {
+                setSavedJobIds(new Set(data.map(d => d.job_id)));
+            }
+        };
+        fetchSaved();
+    }, [user]);
+
+    const handleToggleSave = async (jobId: string) => {
+        if (!user) {
+            router.push('/login?redirect=/companies');
+            return;
+        }
+        if (saving) return;
+        setSaving(true);
+
+        const isSaved = savedJobIds.has(jobId);
+
+        if (isSaved) {
+            const { error } = await supabase.from('saved_jobs').delete().match({ user_id: user.id, job_id: jobId });
+            if (!error) {
+                setSavedJobIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(jobId);
+                    return next;
+                });
+            }
+        } else {
+            const { error } = await supabase.from('saved_jobs').insert({ user_id: user.id, job_id: jobId });
+            if (!error) {
+                setSavedJobIds(prev => {
+                    const next = new Set(prev);
+                    next.add(jobId);
+                    return next;
+                });
+            }
+        }
+        setSaving(false);
+    };
 
     // Debounce search
     useEffect(() => {
@@ -130,6 +183,16 @@ export default function CompaniesPage() {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleApply = (e: React.MouseEvent, url: string) => {
+        e.preventDefault();
+        if (!user) {
+            const returnUrl = encodeURIComponent(window.location.href);
+            router.push(`/login?redirect=${returnUrl}`);
+        } else {
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
     };
 
@@ -331,12 +394,33 @@ export default function CompaniesPage() {
 
                                 <a
                                     href={selectedJob.job_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    onClick={(e) => handleApply(e, selectedJob.job_url)}
                                     className={styles.applyLink}
                                 >
                                     Apply on Company Site <ExternalLink size={16} />
                                 </a>
+                                <button
+                                    onClick={() => handleToggleSave(selectedJob.id)}
+                                    style={{
+                                        background: 'transparent',
+                                        border: '1px solid #3f3f46',
+                                        color: 'white',
+                                        padding: '0.5rem 0.75rem',
+                                        borderRadius: '0.375rem',
+                                        marginLeft: '0.5rem',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}
+                                    title={savedJobIds.has(selectedJob.id) ? "Unsave Job" : "Save Job"}
+                                >
+                                    <Bookmark
+                                        size={18}
+                                        fill={savedJobIds.has(selectedJob.id) ? "currentColor" : "none"}
+                                        color={savedJobIds.has(selectedJob.id) ? "#3b82f6" : "currentColor"}
+                                    />
+                                </button>
                             </div>
 
                             <div className={styles.scrollArea}>
