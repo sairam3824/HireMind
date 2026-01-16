@@ -3,13 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, Menu, X } from "lucide-react";
+import { Briefcase, Menu, X, LogIn, UserPlus, LogOut } from "lucide-react";
 import FeedbackWidget from "@/components/FeedbackWidget";
+import { useAuth } from "@/context/AuthContext";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { user, signOut } = useAuth();
 
     const isActive = (path: string) => {
         if (path === "/" && pathname === "/") return true;
@@ -55,8 +57,39 @@ export default function Navbar() {
                         Companies
                     </Link>
 
-                    <div className="ml-2 pl-2 border-l border-white/10 h-6 flex items-center">
+                    {/* Saved Jobs - Only if logged in? Or always? Let's show always for now or redirect if not auth */}
+                    {user && (
+                        <Link
+                            href="/saved-jobs"
+                            className={`${styles.navLink} ${isActive("/saved-jobs") ? styles.active : ""}`}
+                        >
+                            Saved
+                        </Link>
+                    )}
+
+                    <div className={styles.feedbackWrapper}>
                         <FeedbackWidget />
+                    </div>
+
+                    {/* Auth Section */}
+                    <div className={styles.authSection}>
+                        {user ? (
+                            <div className={styles.authGroup}>
+                                <span className={styles.userEmail}>{user.email?.split('@')[0]}</span>
+                                <button onClick={signOut} className={styles.logoutBtn}>
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={styles.authGroup}>
+                                <Link href="/login" className={styles.navLink}>
+                                    Login
+                                </Link>
+                                <Link href="/signup" className={styles.signupBtn}>
+                                    Sign Up
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -85,9 +118,49 @@ export default function Navbar() {
                     >
                         Companies
                     </Link>
+                    {user && (
+                        <Link
+                            href="/saved-jobs"
+                            className={`${styles.mobileNavLink} ${isActive("/saved-jobs") ? styles.active : ""}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Saved
+                        </Link>
+                    )}
 
-                    <div className="pt-2 mt-2 border-t border-white/10">
+                    <div className={styles.mobileSection}>
                         <FeedbackWidget className={styles.mobileNavLink} />
+                    </div>
+
+                    <div className={styles.mobileSection}>
+                        {user ? (
+                            <div className={styles.mobileAuthButtons}>
+                                <span className={styles.userEmailMobile}>{user.email}</span>
+                                <button
+                                    onClick={() => { signOut(); setIsMobileMenuOpen(false); }}
+                                    className={`${styles.mobileNavLink} ${styles.logoutBtnMobile}`}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={styles.mobileAuthButtons}>
+                                <Link
+                                    href="/login"
+                                    className={styles.mobileNavLink}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className={`${styles.mobileNavLink} ${styles.signupBtnMobile}`}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Sign Up
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
