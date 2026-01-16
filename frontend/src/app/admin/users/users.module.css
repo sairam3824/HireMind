@@ -1,0 +1,146 @@
+.container {
+    min-height: 100vh;
+    padding: 4rem 2rem;
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+/* Table Styles */
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 800px;
+}
+
+.table th,
+.table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #334155;
+    color: #e2e8f0;
+}
+
+.table th {
+    background: #0f172a;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.table th:hover {
+    color: #f8fafc;
+}
+
+.table th .headerContent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sortIcon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+}
+
+.table th:hover .sortIcon {
+    opacity: 1;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(51, 65, 85, 0.3);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Cell Specific Styles */
+.emailCell {
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.dateCell {
+    white-space: nowrap;
+    color: #94a3b8;
+    font-family: monospace;
+}
+
+/* Role Badges */
+.roleBadge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.roleAdmin {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.roleUser {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    color: #94a3b8;
+}
+
+.empty {
+    text-align: center;
+    color: #64748b;
+    margin-top: 4rem;
+    font-size: 1.1rem;
+}
