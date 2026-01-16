@@ -4,13 +4,99 @@
     min-height: 100vh;
     background-color: #000000;
     color: #ffffff;
-    padding: 2rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
+/* Sidebar Styling */
+.sidebar {
+    width: 260px;
+    background-color: #121212;
+    border-right: 1px solid #27272a;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+}
+
+.sidebarHeader {
+    margin-bottom: 2rem;
+    padding-left: 0.5rem;
+}
+
+.sidebarTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.025em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #a1a1aa;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.navItem:hover {
+    background-color: #18181b;
+    color: #ffffff;
+}
+
+.navItemActive {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #3b82f6;
+}
+
+.navItemActive:hover {
+    background-color: rgba(37, 99, 235, 0.15);
+}
+
+.mainContent {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    max-width: 100%;
+}
+
+/* Content Header - Replaced Dashboard Header */
+.contentHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #27272a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contentTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* Updated login/loading containers to work within potential flex context */
 .loadingContainer {
-    min-height: 100vh;
+    width: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,16 +105,27 @@
 }
 
 .loginContainer {
-    min-height: 80vh;
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    background-color: #000000;
 }
 
-.loginCard {
+.loginCard,
+.explodedContainer {
+    /* Kept same as before */
     width: 100%;
     max-width: 400px;
+}
+
+/* Copy over all the previous styles for the login form, gimmick, etc. 
+   I am restating them here to ensure the full file is valid CSS module 
+*/
+
+.loginCard {
     background-color: #121212;
     border: 1px solid #27272a;
     border-radius: 12px;
@@ -66,7 +163,28 @@
 .subtitle {
     color: #a1a1aa;
     font-size: 0.875rem;
+    color: #a1a1aa;
+    font-size: 0.875rem;
     margin: 0;
+}
+
+.sidebarFooter {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #27272a;
+}
+
+.userProfile {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.userEmail {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .form {
@@ -103,51 +221,6 @@
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 1px #2563eb;
-}
-
-.errorBox {
-    padding: 0.75rem;
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 8px;
-    color: #ef4444;
-    font-size: 0.875rem;
-}
-
-.button {
-    width: 100%;
-    background-color: #2563eb;
-    color: white;
-    font-weight: 500;
-    padding: 0.75rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 0.5rem;
-}
-
-.button:hover {
-    background-color: #1d4ed8;
-}
-
-.button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.bombTimer {
-    font-size: 3rem;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 700;
-    color: #ef4444;
-    text-align: center;
-    margin: 1rem 0;
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-    letter-spacing: 4px;
 }
 
 .redButton {
@@ -254,46 +327,23 @@
     }
 }
 
-/* Dashboard Header */
-.dashboardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
-    border-bottom: 1px solid #27272a;
-    padding-bottom: 1.5rem;
-}
-
-.dashboardTitle {
-    font-size: 2rem;
+.bombTimer {
+    font-size: 3rem;
+    font-family: 'Courier New', Courier, monospace;
     font-weight: 700;
-    margin: 0;
+    color: #ef4444;
+    text-align: center;
+    margin: 1rem 0;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    letter-spacing: 4px;
 }
 
-.signOutButton {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #18181b;
-    border: 1px solid #27272a;
-    border-radius: 8px;
-    color: #d1d5db;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.signOutButton:hover {
-    background-color: #27272a;
-    color: white;
-}
-
-/* Grid Layout for Dashboard */
+/* Grid Layout for Dashboard - Restored to 3 Columns */
 .grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     gap: 1.5rem;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -315,20 +365,15 @@
     border-radius: 0.75rem;
     transition: all 0.3s ease;
     text-decoration: none;
-    /* For Link */
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .card:hover {
     border-color: rgba(37, 99, 235, 0.5);
-    /* Primary/50 */
     background-color: #18181b;
-}
-
-.cardDisabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+    transform: translateY(-2px);
 }
 
 .cardIcon {
@@ -347,11 +392,6 @@
     transform: scale(1.1);
 }
 
-.cardIconDisabled {
-    background-color: #1f2937;
-    /* Gray 800 */
-}
-
 .cardTitle {
     font-size: 1.25rem;
     font-weight: 600;
@@ -366,6 +406,5 @@
 
 .cardDesc {
     color: #9ca3af;
-    /* Gray 400 */
     font-size: 0.875rem;
 }
