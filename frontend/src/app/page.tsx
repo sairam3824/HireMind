@@ -7,8 +7,10 @@ import { FileText, ArrowRight, Loader2, CheckCircle, Upload, AlertCircle, Award,
 import Modal from "@/components/Modal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
+    const { user, loading: authLoading } = useAuth();
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
@@ -138,7 +140,30 @@ export default function Home() {
                             </p>
                         </div>
 
-                        {!result ? (
+                        {authLoading ? (
+                            <div className={styles.authLoading}>
+                                <Loader2 className={styles.loadingSpinner} size={32} />
+                                <p className={styles.loadingText}>Checking access...</p>
+                            </div>
+                        ) : !user ? (
+                            <div className={styles.loginCard}>
+                                <div className={styles.loginIconWrapper}>
+                                    <FileText color="#60a5fa" size={32} />
+                                </div>
+                                <h3 className={styles.loginTitle}>Login to Analyse Resume</h3>
+                                <p className={styles.loginDescription}>
+                                    Create an account or sign in to upload your resume, receive detailed AI scores, and get matched with top companies.
+                                </p>
+                                <div className={styles.loginActions}>
+                                    <Link href="/login" className={styles.signInButton}>
+                                        Sign In
+                                    </Link>
+                                    <Link href="/signup" className={styles.createAccountButton}>
+                                        Create Account
+                                    </Link>
+                                </div>
+                            </div>
+                        ) : !result ? (
                             <div className={styles.uploadArea}>
                                 <input
                                     type="file"
@@ -151,7 +176,7 @@ export default function Home() {
                                     htmlFor="resume-upload"
                                     className={styles.uploadLabel}
                                 >
-                                    <Upload size={40} className="text-gray-400" />
+                                    <Upload size={40} color="#9ca3af" />
                                     <span className={styles.uploadText}>
                                         {file ? file.name : "Click to Upload Resume (PDF)"}
                                     </span>
@@ -207,7 +232,7 @@ export default function Home() {
                                 {/* Details Card */}
                                 <div className={styles.detailsCard}>
                                     <h3 className={styles.detailsHeader}>
-                                        <Award size={20} className="text-blue-400" /> Score Breakdown
+                                        <Award size={20} color="#60a5fa" /> Score Breakdown
                                     </h3>
 
                                     <div className={styles.breakdownList}>
