@@ -3,12 +3,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center;  <-- Removed to allow footer to sit at bottom */
     padding: 1rem;
+    padding-bottom: 0;
+    /* Let footer handle bottom padding/margin if needed */
     background: radial-gradient(circle at top center, #1e3a8a20 0%, transparent 40%),
         radial-gradient(circle at bottom right, #581c8710 0%, transparent 40%);
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    /* Check overflowing */
+}
+
+.contentWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .backLink {
