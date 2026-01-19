@@ -46,6 +46,11 @@ export default function Navbar() {
         return false;
     };
 
+    // Hide Navbar on Admin pages
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
+
     return (
         <nav className={styles.navbar}>
             <div className={styles.navContainer}>
@@ -102,14 +107,15 @@ export default function Navbar() {
                             </Link>
                         </>
                     )}
-                </div>
 
-                {/* Right Side Actions */}
-                <div className={styles.rightActions}>
-                    <div className={styles.feedbackWrapper}>
+                    {/* Feedback Widget treated as a Nav Link */}
+                    <div className={styles.feedbackLink}>
                         <FeedbackWidget />
                     </div>
+                </div>
 
+                {/* Right Side Actions - Profile / Auth Only */}
+                <div className={styles.rightActions}>
                     {user ? (
                         <div
                             className={styles.profileWrapper}
