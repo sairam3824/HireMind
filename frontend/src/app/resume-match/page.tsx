@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Briefcase, ExternalLink, MapPin, Clock, Star, AlertCircle, RefreshCw, FileText, CheckCircle } from "lucide-react"; // Import necessary icons
 import ResumeUpload, { ResumeAnalysisResult } from "@/features/resume/components/ResumeUpload";
+import ResumeAnalysisReport from "@/components/ResumeAnalysisReport";
 import ReactMarkdown from 'react-markdown'; // Ensure this is installed or use simple text rendering
 import Link from 'next/link';
 
@@ -165,139 +166,10 @@ export default function ResumeMatchPage() {
                 ) : (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* 1. Resume Analysis Report */}
-                        <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden">
-                            <div className="bg-white/5 border-b border-white/5 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                                        <FileText className="text-blue-400" />
-                                        Resume Analysis
-                                    </h2>
-                                    <p className="text-gray-400 text-sm mt-1">
-                                        Analyzed for ATS compatibility and job matching potential.
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={() => { setAnalysis(null); setMatchedJobs([]); }}
-                                        className="text-sm text-gray-400 hover:text-white underline"
-                                    >
-                                        Upload New
-                                    </button>
-                                    <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-xl">
-                                        <span className="text-3xl font-bold text-blue-400">{analysis.score.totalScore}</span>
-                                        <div className="flex flex-col text-xs text-blue-200 leading-tight">
-                                            <span className="font-bold">ATS SCORE</span>
-                                            <span>/ 100</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {/* Profile & Soft Skills */}
-                                <div className="space-y-6">
-                                    <div>
-                                        <h3 className="text-sm font-uppercase text-gray-500 tracking-wider mb-2">CANDIDATE PROFILE</h3>
-                                        <div className="bg-white/5 rounded-lg p-4 space-y-2">
-                                            {analysis.resume.profile.name && (
-                                                <div className="flex items-center gap-2 text-white font-medium">
-                                                    <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs text-blue-400">
-                                                        {analysis.resume.profile.name[0]}
-                                                    </div>
-                                                    {analysis.resume.profile.name}
-                                                </div>
-                                            )}
-                                            {analysis.resume.profile.location && (
-                                                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                                                    <MapPin size={14} className="text-gray-500" />
-                                                    {analysis.resume.profile.location}
-                                                </div>
-                                            )}
-                                            <div className="flex items-center gap-2 text-gray-400 text-sm truncate">
-                                                <div className="w-4 h-4 rounded-full bg-gray-700" /> {/* Placeholder for email icon if needed */}
-                                                {user?.email}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-uppercase text-gray-500 tracking-wider mb-2">SOFT SKILLS</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {analysis.softSkills && analysis.softSkills.length > 0 ? (
-                                                analysis.softSkills.map((skill, i) => (
-                                                    <span key={i} className="px-2 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs rounded-md">
-                                                        {skill}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-gray-600 text-sm italic">No specific soft skills detected</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Score Breakdown */}
-                                <div className="md:col-span-2 space-y-6">
-                                    <div>
-                                        <h3 className="text-sm font-uppercase text-gray-500 tracking-wider mb-3">PERFORMANCE BREAKDOWN</h3>
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                            {[
-                                                { label: "Impact", val: analysis.score.breakdown.impact, icon: <Star size={14} /> },
-                                                { label: "Keywords", val: analysis.score.breakdown.keywords, icon: <CheckCircle size={14} /> },
-                                                { label: "Structure", val: analysis.score.breakdown.structure, icon: <FileText size={14} /> },
-                                                { label: "Content", val: analysis.score.breakdown.experience, icon: <Briefcase size={14} /> },
-                                            ].map((met, i) => (
-                                                <div key={i} className="bg-white/5 rounded-lg p-3 border border-white/5">
-                                                    <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
-                                                        {met.icon} {met.label}
-                                                    </div>
-                                                    <div className="text-lg font-bold text-white">
-                                                        {met.val}<span className="text-gray-600 text-xs font-normal">/20</span>
-                                                    </div>
-                                                    <div className="w-full bg-gray-800 h-1 rounded-full mt-2">
-                                                        <div className="bg-blue-500 h-full rounded-full" style={{ width: `${(met.val / 20) * 100}%` }} />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-uppercase text-gray-500 tracking-wider mb-2">IMPROVEMENT FEEDBACK</h3>
-                                        <div className="bg-orange-500/5 border border-orange-500/10 rounded-lg p-4">
-                                            {analysis.score.feedback && analysis.score.feedback.length > 0 ? (
-                                                <ul className="space-y-2">
-                                                    {analysis.score.feedback.map((tip, i) => (
-                                                        <li key={i} className="flex items-start gap-2 text-sm text-orange-200/80">
-                                                            <AlertCircle size={14} className="mt-0.5 text-orange-400 flex-shrink-0" />
-                                                            {tip}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <p className="text-green-400 text-sm flex items-center gap-2">
-                                                    <CheckCircle size={14} /> Great job! No critical improvements detected.
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-sm font-uppercase text-gray-500 tracking-wider mb-2">HARD SKILLS (USED FOR JOB MATCHING)</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {analysis.keywords.slice(0, 15).map((k, i) => (
-                                                <span key={i} className="px-2 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs rounded-full">
-                                                    {k}
-                                                </span>
-                                            ))}
-                                            {analysis.keywords.length > 15 && (
-                                                <span className="px-2 py-1 text-gray-500 text-xs">+{analysis.keywords.length - 15} more</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <ResumeAnalysisReport
+                            analysis={analysis}
+                            onReset={() => { setAnalysis(null); setMatchedJobs([]); }}
+                        />
 
                         {/* 2. Matched Jobs Section */}
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">

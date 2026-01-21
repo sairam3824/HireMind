@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     Home,
     MessageSquare,
@@ -15,12 +15,18 @@ import styles from "./AdminNavbar.module.css";
 
 export default function AdminNavbar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { user, signOut } = useAuth();
 
     const isActive = (path: string) => {
         if (path === "/admin" && pathname === "/admin") return true;
         if (path !== "/admin" && pathname?.startsWith(path)) return true;
         return false;
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+        router.push('/');
     };
 
     return (
@@ -76,7 +82,7 @@ export default function AdminNavbar() {
                     )}
 
                     <button
-                        onClick={() => signOut()}
+                        onClick={handleSignOut}
                         className={styles.logoutBtn}
                         title="Sign Out"
                     >

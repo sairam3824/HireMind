@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
+import Link from 'next/link';
 
 export interface ResumeAnalysisResult {
     resume: {
@@ -28,6 +29,7 @@ export interface ResumeAnalysisResult {
     };
     keywords: string[];
     softSkills?: string[];
+    predictedRoles?: string[];
 }
 
 interface ResumeUploadProps {
@@ -39,6 +41,7 @@ interface ResumeScore {
     resume_name: string;
     total_score: number;
     created_at: string;
+    score_details: any;
 }
 
 export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
@@ -47,54 +50,58 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [statusMessage, setStatusMessage] = useState<string>("");
     const [canUpload, setCanUpload] = useState(true);
     const [checkingEligibility, setCheckingEligibility] = useState(true);
     const [scoreHistory, setScoreHistory] = useState<ResumeScore[]>([]);
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [usageCount, setUsageCount] = useState<number>(0);
 
-    useEffect(() => {
-        if (authLoading) return;
 
-        if (user) {
-            checkEligibility();
-            fetchScoreHistory();
-        } else {
-            // If no user, decide policy. Currently allowing guests or treating as 'not eligible' for tracking but 'eligible' for upload?
-            // If requirement is strict 'only once daily', guests shouldn't upload or we can't track them.
-            // Assuming for now guests can upload (or app protects route).
-            setCheckingEligibility(false);
-        }
-    }, [user, authLoading]);
 
-    const checkEligibility = async () => {
+    const checkEligibility = useCallback(async () => {
         if (!user) return;
         try {
-            const { data, error } = await supabase
+            // Get profile with last upload timestamp
+            const { data: profile } = await supabase
                 .from('profiles')
-                .select('last_resume_upload_at')
+                .select('role, last_resume_upload_at')
                 .eq('id', user.id)
                 .single();
 
-            if (data?.last_resume_upload_at) {
-                const lastUpload = new Date(data.last_resume_upload_at);
-                const today = new Date();
+            const role = profile?.role || 'user';
+            setUserRole(role);
 
-                // Reset limit if it's a new day (UTC or local? using local date comparison for simplicity and user expectation)
-                if (lastUpload.toDateString() === today.toDateString()) {
+            // Check if last upload was today
+            const lastUpload = profile?.last_resume_upload_at;
+
+            if (!lastUpload) {
+                // Never uploaded before - allow
+                setCanUpload(true);
+                setError(null);
+            } else {
+                // Check if last upload was today
+                const lastUploadDate = new Date(lastUpload).toDateString();
+                const today = new Date().toDateString();
+
+                if (lastUploadDate === today) {
+                    // Already uploaded today - block
                     setCanUpload(false);
-                    setError("You have reached your daily resume upload limit. Please try again tomorrow.");
+                    setError(`Daily limit reached. Come back tomorrow!`);
                 } else {
+                    // Last upload was on a different day - allow
                     setCanUpload(true);
+                    setError(null);
                 }
             }
         } catch (err) {
             console.error("Error checking upload eligibility:", err);
-            // Default to allowing upload if check fails, or could block. Letting it pass for now.
         } finally {
             setCheckingEligibility(false);
         }
-    };
+    }, [user]);
 
-    const fetchScoreHistory = async () => {
+    const fetchScoreHistory = useCallback(async () => {
         if (!user) return;
         try {
             const { data, error } = await supabase
@@ -110,7 +117,18 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
         } catch (err) {
             console.error("Error fetching resume history:", err);
         }
-    };
+    }, [user]);
+
+    useEffect(() => {
+        if (authLoading) return;
+
+        if (user) {
+            checkEligibility();
+            fetchScoreHistory();
+        } else {
+            setCheckingEligibility(false);
+        }
+    }, [user, authLoading, checkEligibility, fetchScoreHistory]);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -148,18 +166,26 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
     };
 
     const handleUpload = async () => {
-        if (!file || !canUpload) return;
+        if (!file || !canUpload || !user) return;
 
         setUploading(true);
         setError(null);
+        setStatusMessage("Uploading resume...");
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('user_id', user.id); // Send user_id for backend processing
 
         try {
-            // Use env var for API URL, fallback to localhost for dev
-            const API_URL = process.env.NEXT_PUBLIC_RESUME_PARSER_URL || 'http://localhost:8000';
+            let API_URL = process.env.NEXT_PUBLIC_RESUME_PARSER_URL || 'http://localhost:8000';
+            // Remove trailing slash
+            API_URL = API_URL.replace(/\/$/, '');
+            // Remove /api/parser if present (legacy env var fix)
+            API_URL = API_URL.replace(/\/api\/parser$/, '');
 
+            setStatusMessage("Analyzing resume with AI... This may take a moment.");
+
+            // Call the synchronous resume parser API
             const response = await fetch(`${API_URL}/api/parser`, {
                 method: 'POST',
                 body: formData,
@@ -167,70 +193,51 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to parse resume');
+                throw new Error(errorData.detail || 'Failed to analyze resume');
             }
 
-            const data = await response.json();
+            const resultData = await response.json();
 
-            // Update last upload time
-            if (user) {
-                console.log("Attempting to update profile and save score for user:", user.id);
-
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .update({ last_resume_upload_at: new Date().toISOString() })
-                    .eq('id', user.id);
-
-                if (profileError) {
-                    console.error("Error updating profile last_resume_upload_at:", profileError);
-                } else {
-                    console.log("Profile updated successfully");
-                }
-
-                // Save score
-                if (data.score && typeof data.score.totalScore === 'number') {
-                    console.log("Saving score:", data.score.totalScore);
-                    const { error: scoreError } = await supabase.from('resume_scores').insert({
+            // Save score to database
+            if (resultData.score?.totalScore) {
+                try {
+                    // Insert into resume_scores with correct schema
+                    await supabase.from('resume_scores').insert({
                         user_id: user.id,
                         resume_name: file.name,
-                        total_score: data.score.totalScore,
-                        score_details: data.score
+                        total_score: resultData.score.totalScore,
+                        score_details: resultData, // Store full result as JSONB
                     });
 
-                    if (scoreError) {
-                        console.error("Error inserting resume score:", scoreError);
-                    } else {
-                        console.log("Score saved successfully");
-                        // Refresh history
-                        fetchScoreHistory();
-                    }
-                } else {
-                    console.warn("No score data to save:", data.score);
+                    // Update last_resume_upload_at in profiles
+                    await supabase
+                        .from('profiles')
+                        .update({ last_resume_upload_at: new Date().toISOString() })
+                        .eq('id', user.id);
+                } catch (dbErr) {
+                    console.error("Failed to save score to database:", dbErr);
                 }
-
-                // Re-check eligibility (will disable further uploads)
-                setCanUpload(false);
-            } else {
-                console.warn("User not found, skipping DB updates");
             }
 
-            // Extract keywords from the response
-            // The response structure from main.py is: { resume: {}, score: {}, keywords: [] }
-            // or sometimes it might be just { ... } depending on the implementation details we saw earlier.
-            // Looking at main.py lines 208: "keywords": keywords
+            // Success handling
+            console.log("Analysis complete");
 
-            if (data.keywords && Array.isArray(data.keywords)) {
-                onUploadComplete(data as ResumeAnalysisResult);
-            } else {
-                // Fallback if keywords aren't directly there, though they should be based on the code I read
-                setError('Could not extract keywords from resume.');
+            // Re-check eligibility (will disable further uploads)
+            checkEligibility();
+
+            // Refresh history to show the new one
+            await fetchScoreHistory();
+
+            if (resultData) {
+                onUploadComplete(resultData as ResumeAnalysisResult);
             }
 
         } catch (err: any) {
             console.error(err);
-            setError(err.message || 'Error communicating with parser service. Make sure it is running on port 8000.');
+            setError(err.message || 'Error communicating with parser service.');
         } finally {
             setUploading(false);
+            setStatusMessage("");
         }
     };
 
@@ -245,7 +252,9 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
     return (
         <div className="flex flex-col gap-6 w-full max-w-md mx-auto">
             <div className="bg-white/5 rounded-xl border border-white/10 p-6">
-                <h3 className="text-xl font-semibold mb-4 text-white">Upload Resume</h3>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-semibold text-white">Upload Resume</h3>
+                </div>
 
                 <div
                     className={`
@@ -299,6 +308,12 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
                     </div>
                 )}
 
+                {uploading && statusMessage && (
+                    <div className="mt-4 text-center text-sm text-blue-300 animate-pulse">
+                        {statusMessage}
+                    </div>
+                )}
+
                 <button
                     onClick={handleUpload}
                     disabled={!file || uploading || !canUpload}
@@ -312,7 +327,7 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
                     {uploading ? (
                         <>
                             <Loader2 size={18} className="animate-spin" />
-                            Analyzing...
+                            Processing...
                         </>
                     ) : (
                         <>
@@ -321,9 +336,9 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
                         </>
                     )}
                 </button>
-                {!canUpload && (
+                {!canUpload && userRole !== 'admin' && (
                     <p className="text-xs text-center text-gray-500 mt-2">
-                        You can upload one resume every 24 hours.
+                        {usageCount >= 2 ? "Upgrade to Admin for unlimited uploads." : "Daily upload limit reached."}
                     </p>
                 )}
             </div>
@@ -331,31 +346,52 @@ export default function ResumeUpload({ onUploadComplete }: ResumeUploadProps) {
             {/* Resume History */}
             {scoreHistory.length > 0 && (
                 <div className="bg-white/5 rounded-xl border border-white/10 p-6">
-                    <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                        <FileText size={18} className="text-blue-400" />
-                        Recent Scans
-                    </h4>
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-medium text-white flex items-center gap-2">
+                            <FileText size={18} className="text-blue-400" />
+                            Recent Scans
+                        </h4>
+                        <Link href="/resume-dashboard" className="text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-md border border-blue-500/20">
+                            Dashboard
+                        </Link>
+                    </div>
                     <div className="space-y-3">
-                        {scoreHistory.map((score) => (
-                            <div key={score.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
-                                <div>
-                                    <p className="text-sm font-medium text-white truncate max-w-[180px]">
-                                        {score.resume_name || "Resume"}
-                                    </p>
-                                    <p className="text-xs text-gray-400">
-                                        {new Date(score.created_at).toLocaleDateString()}
-                                    </p>
+                        {scoreHistory.map((score) => {
+                            const hasFullDetails = score.score_details && (score.score_details.resume || score.score_details.keywords);
+
+                            return (
+                                <div
+                                    key={score.id}
+                                    onClick={() => onUploadComplete(score.score_details as ResumeAnalysisResult)}
+                                    className={`
+                                        flex items-center justify-between p-3 rounded-lg border border-white/5 transition-all
+                                        bg-white/5 hover:bg-white/10 cursor-pointer hover:border-blue-500/30
+                                    `}
+                                >
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm font-medium text-white truncate max-w-[180px]">
+                                                {score.resume_name || "Resume"}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-gray-400">
+                                            {new Date(score.created_at).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className={`text-lg font-bold ${score.total_score >= 70 ? 'text-green-400' :
+                                                score.total_score >= 40 ? 'text-yellow-400' : 'text-red-400'
+                                                }`}>
+                                                {score.total_score}
+                                            </span>
+                                            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Score</span>
+                                        </div>
+                                        {hasFullDetails && <ArrowRight size={14} className="text-gray-500" />}
+                                    </div>
                                 </div>
-                                <div className="flex items-baseline gap-2">
-                                    <span className={`text-lg font-bold ${score.total_score >= 70 ? 'text-green-400' :
-                                        score.total_score >= 40 ? 'text-yellow-400' : 'text-red-400'
-                                        }`}>
-                                        {score.total_score} ±5
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 uppercase tracking-wider">Score</span>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}
