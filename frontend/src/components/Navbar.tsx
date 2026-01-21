@@ -2,14 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     Briefcase,
     Menu,
     X,
     LogOut,
     User,
-    Settings
 } from "lucide-react";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import { useAuth } from "@/context/AuthContext";
@@ -17,6 +16,7 @@ import styles from "./Navbar.module.css";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { user, signOut } = useAuth();
 
     // UI State
@@ -50,6 +50,13 @@ export default function Navbar() {
     if (pathname?.startsWith('/admin')) {
         return null;
     }
+
+    const handleSignOut = async () => {
+        await signOut();
+        setIsProfileOpen(false);
+        setIsMobileMenuOpen(false);
+        router.push('/');
+    };
 
     return (
         <>
@@ -157,10 +164,7 @@ export default function Navbar() {
                                         <div className={styles.dropdownDivider} />
 
                                         <button
-                                            onClick={() => {
-                                                signOut();
-                                                setIsProfileOpen(false);
-                                            }}
+                                            onClick={handleSignOut}
                                             className={`${styles.dropdownItem} ${styles.danger}`}
                                         >
                                             <LogOut size={16} /> Logout
@@ -246,7 +250,7 @@ export default function Navbar() {
                                     My Profile ({user.email?.split('@')[0]})
                                 </Link>
                                 <button
-                                    onClick={() => { signOut(); setIsMobileMenuOpen(false); }}
+                                    onClick={handleSignOut}
                                     className={styles.logoutBtnMobile}
                                 >
                                     Logout

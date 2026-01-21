@@ -4,7 +4,7 @@
     top: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 50;
+    z-index: 1000;
     width: 90%;
     max-width: 1400px;
 }
