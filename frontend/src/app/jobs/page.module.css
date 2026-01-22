@@ -1,20 +1,41 @@
 .container {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background-color: var(--background);
   color: var(--foreground);
+  padding-top: 105px;
+  /* Reduced space */
 }
 
 /* Header */
 .header {
-  position: sticky;
-  top: 110px;
+  /* Remove sticky, let it be the top block of the flex column */
+  flex-shrink: 0;
   z-index: 50;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--card-border);
-  padding: 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
+}
+
+/* ... existing media query for header ... */
+
+/* ... header content styles ... */
+
+/* Main Content */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  /* Scrollable area */
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -348,6 +369,7 @@
 /* Main Content */
 .main {
   flex: 1;
+  overflow-y: auto;
   padding: 1.5rem;
   display: grid;
   grid-template-columns: 1fr;
@@ -550,9 +572,8 @@
   .jobDetails {
     display: block;
     position: sticky;
-    top: 14rem;
-    /* Header height + gap */
-    height: calc(100vh - 15rem);
+    top: 0;
+    height: calc(100vh - 140px);
   }
 }
 
@@ -563,7 +584,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  /* Enable scroll for whole container */
 }
 
 .backButton {
@@ -707,8 +729,7 @@
 
 .detailsContent {
   flex: 1;
-  overflow-y: auto;
-  padding: 2rem;
+  padding: 2rem 2rem 4rem 2rem;
 }
 
 /* Custom Scrollbar for details */
