@@ -235,6 +235,36 @@
   color: #22c55e;
 }
 
+.contactCard {
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.05) 0%, rgba(24, 24, 27, 0.4) 100%);
+  grid-column: span 2;
+}
+
+.contactCard svg {
+  color: #06b6d4;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #d4d4d8;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contactItem:hover {
+  color: #22d3ee;
+}
+
 /* --- Parser Card Internals --- */
 .parserContent {
   flex-grow: 1;

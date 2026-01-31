@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "./page.module.css";
-import { FileText, ArrowRight, Loader2, CheckCircle, Upload, AlertCircle, Award, Building, Briefcase, Construction, Info } from "lucide-react";
+import { FileText, ArrowRight, Loader2, CheckCircle, Upload, AlertCircle, Award, Building, Briefcase, Construction, Info, Mail, Phone, Linkedin, Github, ExternalLink, User, Globe } from "lucide-react";
 import Footer from "@/components/Footer";
 import Modal from "@/components/Modal";
 import Link from "next/link";
@@ -243,6 +243,44 @@ export default function Home() {
                 </div>
 
                 <div className={styles.gridContainer}>
+                    {/* Card 0: Contact / Profile */}
+                    <div className={`${styles.gridCard} ${styles.contactCard}`}>
+                        <div className={styles.cardHeader}>
+                            <User size={32} />
+                            <h3>Project Built By</h3>
+                        </div>
+                        <p className={styles.cardDescription}>
+                            Developed by Sairam Maruri. Let's connect!
+                        </p>
+
+                        <div className={styles.contactInfo}>
+                            <div className={styles.contactItem}>
+                                <User size={18} />
+                                <span>MARURI SAI RAMA LINGA REDDY</span>
+                            </div>
+                            <a href="mailto:sairam.maruri@gmail.com" className={styles.contactItem}>
+                                <Mail size={18} />
+                                <span>sairam.maruri@gmail.com</span>
+                            </a>
+                            <a href="tel:+917893865644" className={styles.contactItem}>
+                                <Phone size={18} />
+                                <span>+91 78938 65644</span>
+                            </a>
+                            <a href="https://saiii.in" target="_blank" rel="noopener noreferrer" className={styles.contactItem}>
+                                <Globe size={18} />
+                                <span>Portfolio - saiii.in</span> <ExternalLink size={14} />
+                            </a>
+                            <a href="https://linkedin.com/in/sairammaruri" target="_blank" rel="noopener noreferrer" className={styles.contactItem}>
+                                <Linkedin size={18} />
+                                <span>linkedin.com/in/sairam-maruri/</span> <ExternalLink size={14} />
+                            </a>
+                            <a href="https://github.com/sairam3824" target="_blank" rel="noopener noreferrer" className={styles.contactItem}>
+                                <Github size={18} />
+                                <span>github.com/sairam3824</span> <ExternalLink size={14} />
+                            </a>
+                        </div>
+                    </div>
+
                     {/* Card 1: Browse Jobs */}
                     <Link href="/jobs" className={`${styles.gridCard} ${styles.jobsCard}`}>
                         <div className={styles.cardHeader}>
@@ -391,6 +429,8 @@ export default function Home() {
                             </Link>
                         )}
                     </div>
+
+
                 </div>
             </main >
 
