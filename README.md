@@ -2,6 +2,8 @@
 
 **HireMind** is a cutting-edge, AI-powered job aggregation and career management platform designed to revolutionize how job seekers find their next opportunity. By leveraging advanced machine learning for resume analysis and a sleek, modern interface, HireMind bridges the gap between talent and opportunity.
 
+**Live Demo:** [hiremind.saiii.in](https://hiremind.saiii.in)
+
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-16.1-black)
 ![React](https://img.shields.io/badge/React-19.2-blue)
