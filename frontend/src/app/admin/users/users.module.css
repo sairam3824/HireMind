@@ -78,8 +78,8 @@
 }
 
 .sortIcon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     opacity: 0.5;
 }
 
@@ -139,6 +139,32 @@
     align-items: center;
     height: 50vh;
     color: #94a3b8;
+}
+
+.scrollHint {
+    display: none;
+    font-size: 0.8rem;
+    color: #71717a;
+    text-align: right;
+    padding: 0.5rem 1rem 0;
+}
+
+@media (max-width: 768px) {
+    .scrollHint {
+        display: block;
+    }
+
+    .tableContainer {
+        background:
+            linear-gradient(to right, #121212, #121212),
+            linear-gradient(to right, #121212, #121212),
+            linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent),
+            linear-gradient(to left, rgba(0, 0, 0, 0.5), transparent);
+        background-position: left center, right center, left center, right center;
+        background-repeat: no-repeat;
+        background-size: 20px 100%, 20px 100%, 20px 100%, 20px 100%;
+        background-attachment: local, local, scroll, scroll;
+    }
 }
 
 .empty {
