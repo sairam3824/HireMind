@@ -81,7 +81,9 @@
     border: none;
     color: var(--muted);
     cursor: pointer;
-    padding: 0.25rem;
+    padding: 0.5rem;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 50%;
     transition: all 0.2s;
     display: flex;

@@ -77,9 +77,8 @@
 }
 
 .day {
-    height: 36px;
-    width: 36px;
-    /* Approx square */
+    min-height: 36px;
+    min-width: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,4 +128,11 @@
 
 .resetBtn:hover {
     background: #374151;
+}
+
+@media (max-width: 640px) {
+    .calendarContainer {
+        width: 100%;
+        max-width: 300px;
+    }
 }

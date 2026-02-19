@@ -336,12 +336,30 @@
     .mobileMenuToggle {
         display: block;
     }
+
+    .logo {
+        margin-right: 1.5rem;
+    }
+
+    .dropdownMenu {
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .navbar {
+        top: 1rem;
+    }
+
+    .navSpacer {
+        height: 110px;
+    }
 }
 
 /* Mobile Menu Overlay */
 .mobileMenu {
     position: fixed;
-    top: calc(1.5rem + 70px + 0.5rem);
+    top: calc(2rem + 72px + 0.5rem);
     /* Align below the floating island */
     left: 50%;
     transform: translateX(-50%);
@@ -390,6 +408,12 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .mobileMenu {
+        top: calc(1rem + 72px + 0.5rem);
+    }
 }
 
 .logoutBtnMobile {
