@@ -118,6 +118,8 @@ export default function UsersPage() {
                     <p>No users found.</p>
                 </div>
             ) : (
+                <>
+                <p className={styles.scrollHint}>Scroll to see more →</p>
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
                         <thead>
@@ -166,6 +168,7 @@ export default function UsersPage() {
                         </tbody>
                     </table>
                 </div>
+                </>
             )}
         </div>
     );
