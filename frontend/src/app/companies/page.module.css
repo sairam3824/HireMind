@@ -179,7 +179,7 @@
 
 .jobsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     gap: 1rem;
     padding: 1.5rem;
 }
@@ -602,7 +602,9 @@
     background: rgba(0, 0, 0, 0.5);
     border: none;
     border-radius: 50%;
-    padding: 6px;
+    padding: 10px;
+    min-width: 40px;
+    min-height: 40px;
     cursor: pointer;
     z-index: 20;
     display: flex;

@@ -292,7 +292,7 @@
   right: 0;
   width: auto;
   /* Let content dictate width */
-  min-width: 340px;
+  min-width: min(340px, calc(100vw - 2rem));
   background: #0b0f1a;
   border-radius: 20px;
   padding: 16px;
@@ -767,6 +767,12 @@
   }
 }
 
+@media (max-width: 640px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .infoBox {
   background-color: rgba(39, 39, 42, 0.3);
   padding: 1.25rem;
@@ -1118,6 +1124,14 @@
 @media (max-width: 768px) {
   .detailsHeader {
     padding: 1.25rem 1rem;
+  }
+
+  .detailsHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
   }
 
   .detailsContent {

@@ -499,6 +499,27 @@
     color: white;
 }
 
+@media (max-width: 768px) {
+    .header {
+        top: 80px;
+    }
+
+    .actionButtons {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .companyName {
+        font-size: 1.5rem;
+    }
+
+    .companyInfo {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
+
 /* Mobile responsive filters */
 @media (max-width: 768px) {
     .filtersContainer {
