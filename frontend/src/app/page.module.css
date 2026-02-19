@@ -598,6 +598,20 @@
     /* Allow card to shrink if content is less */
   }
 
+  .contactCard {
+    grid-column: span 1;
+  }
+
+  .tooltip {
+    bottom: auto;
+    top: 120%;
+    transform: translateX(-50%) translateY(-10px);
+  }
+
+  .infoIconWrapper:hover .tooltip {
+    transform: translateX(-50%) translateY(0);
+  }
+
   .mainTitle {
     font-size: 2rem;
   }
