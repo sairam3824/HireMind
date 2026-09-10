@@ -1,8 +1,23 @@
 {
     "cities": {
-        "Hyderabad": "Hyderabad, Telangana, India"
+        "Hyderabad": "Hyderabad, Telangana, India",
+        "Bengaluru": "Bengaluru, Karnataka, India",
+        "Mumbai": "Mumbai, Maharashtra, India",
+        "Pune": "Pune, Maharashtra, India",
+        "Chennai": "Chennai, Tamil Nadu, India"
     },
     "roles": [
-        "business analyst"
+        "decision scientist",
+        "analytics consultant",
+        "consultant data analytics",
+        "product analyst",
+        "growth analyst",
+        "strategy analyst",
+        "business analytics",
+        "customer insights analyst",
+        "pricing analyst",
+        "reporting analyst",
+        "business analyst",
+        "data analyst"
     ]
 }
