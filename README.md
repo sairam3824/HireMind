@@ -109,7 +109,13 @@ Follow these steps to set up the project locally.
     row level security policy, index and the signup trigger. It is safe to
     re-run at any time.
 
-6.  **Run the Application**
+6.  **Turn Off Email Confirmation**
+    In the Supabase dashboard, open **Authentication → Sign In / Providers →
+    Email** and switch **Confirm email** off. Signup then returns a session
+    immediately, the signup trigger creates the `profiles` row, and the new
+    user lands in the app without a verification email.
+
+7.  **Run the Application**
     ```bash
     # In frontend directory
     npm run dev

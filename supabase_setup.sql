@@ -156,7 +156,10 @@ grant update (first_name, last_name, last_resume_upload_at)
 -- No INSERT or DELETE policy on purpose: rows are created by the trigger below
 -- and removed by the auth.users cascade.
 
--- Mirror new signups into profiles.
+-- Mirror new signups into profiles. This fires on the auth.users INSERT, so the
+-- profile exists the moment the account is created — no email confirmation step.
+-- Turn confirmation off under Authentication -> Sign In / Providers -> Email so
+-- signUp() also returns a session and the user is logged straight in.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql

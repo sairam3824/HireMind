@@ -47,7 +47,7 @@ function SignupContent() {
         setLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email: email.trim(),
             password: password.trim(),
             options: {
@@ -61,10 +61,31 @@ function SignupContent() {
         if (error) {
             setError(error.message);
             setLoading(false);
-        } else {
-            setSuccess(true);
-            setLoading(false);
+            return;
         }
+
+        // With email confirmation disabled, signUp already returns a session and
+        // the profiles row has been created by the on_auth_user_created trigger.
+        if (data.session) {
+            router.replace(redirect);
+            return;
+        }
+
+        // No session came back. Either confirmation is still switched on for the
+        // project, or the email already exists. Try signing in before falling
+        // back to the confirm-your-email screen.
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password: password.trim(),
+        });
+
+        if (!signInError) {
+            router.replace(redirect);
+            return;
+        }
+
+        setSuccess(true);
+        setLoading(false);
     };
 
     if (authLoading) {
