@@ -50,25 +50,26 @@ const formatJobType = (type: string | null | undefined) => {
 };
 
 const SUGGESTED_ROLES = [
-    "Software Engineer",
-    "Data Scientist",
-    "AI Engineer",
+    "Decision Scientist",
+    "Analytics Consultant",
+    "Consultant Data Analytics",
+    "Product Analyst",
+    "Growth Analyst",
+    "Strategy Analyst",
+    "Business Analytics",
+    "Customer Insights Analyst",
+    "Pricing Analyst",
+    "Reporting Analyst",
     "Business Analyst",
-    "Data Analyst",
-    "Cloud Engineer",
-    "Cybersecurity Analyst",
-    "Digital Marketing Specialist",
-    "Quality Assurance Engineer",
-    "Customer Service Representative"
+    "Data Analyst"
 ];
 
 const SUGGESTED_CITIES = [
-    "Mumbai",
-    "Chennai",
     "Hyderabad",
     "Bengaluru",
+    "Mumbai",
     "Pune",
-    "Kolkata"
+    "Chennai"
 ];
 
 const JOB_TYPES = [
