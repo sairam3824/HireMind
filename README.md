@@ -103,7 +103,13 @@ Follow these steps to set up the project locally.
     python run_jobs_supabase.py # To populate initial job data
     ```
 
-5.  **Run the Application**
+5.  **Database Setup**
+    In the Supabase dashboard, open **SQL Editor → New query**, paste the entire
+    contents of `supabase_setup.sql`, and run it. This creates every table,
+    row level security policy, index and the signup trigger. It is safe to
+    re-run at any time.
+
+6.  **Run the Application**
     ```bash
     # In frontend directory
     npm run dev
@@ -125,7 +131,9 @@ HireMind/
 ├── resume-matcher/          # Python Resume Parsing Service
 │   ├── Dockerfile           # Container config
 │   └── ...
-├── scripts/                 # Utility scripts (SQL, Python)
+├── supabase_setup.sql       # Complete database schema — run once in Supabase
+├── run_jobs_supabase.py     # Daily job scraper (GitHub Actions)
+├── scraper_config.json      # Cities and roles the scraper targets
 ├── LICENSE                  # Apache 2.0 License
 └── README.md                # Project Documentation
 ```

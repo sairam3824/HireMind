@@ -1,8 +1,11 @@
 .DS_Store
 __pycache__/
 *.pyc
+# Env files — real values. .env.example is the committed template and is
+# deliberately NOT ignored.
+.env
 .env.local
-.env.example
+.env*.local
 .venv/
 venv/
 jobs.csv
