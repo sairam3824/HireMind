@@ -14,6 +14,19 @@ load_dotenv()
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 
+# Fail before the scrape, not after it. A missing GitHub Actions secret resolves
+# to an empty string, and create_client() only complains ~45 minutes later.
+missing = [n for n, v in (("SUPABASE_URL", url), ("SUPABASE_KEY", key)) if not v]
+if missing:
+    raise SystemExit(
+        "Missing required environment variable(s): " + ", ".join(missing) + "\n"
+        "Locally: set them in .env at the repo root (see .env.example).\n"
+        "In CI: Repo -> Settings -> Secrets and variables -> Actions -> "
+        "New repository secret, using those exact names."
+    )
+
+supabase = create_client(url, key)
+
 # Load configuration from JSON file
 try:
     with open("scraper_config.json", "r") as f:
@@ -90,8 +103,6 @@ final["raw_data"] = final[raw_cols].to_dict(orient="records")
 final = final[list(valid_cols) + ["raw_data"]]
 
 records = final.to_dict(orient="records")
-
-supabase = create_client(url, key)
 
 for i in range(0, len(records), 100):
     supabase.table("jobs").upsert(
